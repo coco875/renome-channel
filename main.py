@@ -2,6 +2,7 @@ import interactions
 from interactions import get
 import json
 from os import path
+import time
 
 with open("tokens.json") as f:
     tokens = json.load(f)
@@ -31,18 +32,6 @@ anule_change = interactions.Button(
     custom_id="anule change",
     emoji=interactions.Emoji(name="❌")
 )
-
-# modal_confirm = interactions.Modal(
-#         title="Confirmation",
-#         custom_id="mod_app_form",
-#         components=[interactions.TextInput(
-#     style=interactions.TextStyleType.SHORT,
-#     label="Let's get straight to it: what's 1 + 1?",
-#     custom_id="text_input_response",
-#     min_length=1,
-#     max_length=3,
-# )]
-# )
 
 @bot.command(
     name="change",
@@ -96,7 +85,9 @@ async def confirm_changed(ctx: interactions.ComponentContext):
     id_channel = last_message[1].components[0].components[0].options[0].value.split(" ")[0]
     print(id_channel)
     channel = await get(bot, interactions.Channel, object_id=id_channel)
+    time.sleep(1)
     await channel.modify(name=name)
+    time.sleep(1)
     await ctx.edit("Le nom du channel a été changé avec succès", components=[])
 
 
@@ -128,7 +119,7 @@ async def register(ctx: interactions.CommandContext, voice_channel: interactions
         await ctx.send("Ce channel est déjà enregistré")
         return
     
-    data[str(voice_channel.id)] = names.split(" ")
+    data[str(voice_channel.id)] = names.split("|")
     with open("change.json", "w", encoding="UTF-8") as f:
         json.dump(data, f, indent=4)
     
@@ -156,6 +147,7 @@ async def reset(ctx: interactions.CommandContext, voice_channel: interactions.Ch
         return
     
     await voice_channel.modify(name=data[str(voice_channel.id)][0])
+    time.sleep(1)
     await ctx.send("Le nom a été réinitialisé")
 
 @bot.command(
