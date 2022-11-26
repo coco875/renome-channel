@@ -86,7 +86,7 @@ async def confirm_changed(ctx: interactions.ComponentContext):
     print(id_channel)
     channel = await get(bot, interactions.Channel, object_id=id_channel)
     time.sleep(1)
-    await channel.modify(name=name)
+    await channel.modify(name=name, position=channel.position)
     time.sleep(1)
     await ctx.edit("Le nom du channel a été changé avec succès", components=[])
 
@@ -146,7 +146,7 @@ async def reset(ctx: interactions.CommandContext, voice_channel: interactions.Ch
         await ctx.send("Ce channel n'est pas enregistré, vous pouvez l'enregistrer avec la commande `register`")
         return
     
-    await voice_channel.modify(name=data[str(voice_channel.id)][0])
+    await voice_channel.modify(name=data[str(voice_channel.id)][0], position=voice_channel.position)
     time.sleep(1)
     await ctx.send("Le nom a été réinitialisé")
 
