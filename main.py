@@ -189,11 +189,12 @@ async def unregister(ctx: interactions.CommandContext, voice_channel: interactio
     description="réinitialise tous les noms des channels enregistrés",
 )
 async def reset_all(ctx: interactions.CommandContext):
+    await ctx.send("les noms de tous les channels enregistrés vont être réinitialisés")
     for i in data:
         channel = await get(bot, interactions.Channel, object_id=i)
         await channel.modify(name=data[i][0], position=channel.position)
         time.sleep(1)
-    await ctx.send("Les noms ont été réinitialisés")
+    await ctx.channel.send("Les noms ont été réinitialisés")
 
 @bot.command(
     name="save_order",
