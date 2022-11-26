@@ -19,6 +19,13 @@ if path.isfile("change.json"):
 else:
     data = {}
 
+if path.isfile("order.json"):
+    with open("order.json", "r", encoding="UTF-8") as f:
+        order:dict = json.load(f, parse_int=int, parse_float=float, )
+        print(order)
+else:
+    order = {}
+
 confirm_change = interactions.Button(
     style=interactions.ButtonStyle.SUCCESS,
     label="Confirmer",
@@ -177,6 +184,43 @@ async def unregister(ctx: interactions.CommandContext, voice_channel: interactio
     
     await ctx.send("Le channel a été désenregistré")
 
+@bot.command(
+    name="reset_all",
+    description="réinitialise tous les noms des channels enregistrés",
+)
+async def reset_all(ctx: interactions.CommandContext):
+    for i in data:
+        channel = await get(bot, interactions.Channel, object_id=i)
+        await channel.modify(name=data[i][0], position=channel.position)
+        time.sleep(1)
+    await ctx.send("Les noms ont été réinitialisés")
+
+@bot.command(
+    name="save_order",
+    description="sauvegarde l'ordre des channels",
+)
+async def save_order(ctx: interactions.CommandContext):
+    global order
+    order = {}
+    for i in await ctx.guild.get_all_channels():
+        if i.type == interactions.ChannelType.GUILD_VOICE:
+            order[str(i.id)] = i.position
+    with open("order.json", "w", encoding="UTF-8") as f:
+        json.dump(order, f, indent=4)
+    await ctx.send("L'ordre a été sauvegardé")
+
+@bot.command(
+    name="reset_order",
+    description="réinitialise l'ordre des channels",
+)
+async def reset_order(ctx: interactions.CommandContext):
+    global order
+    await ctx.send("L'ordre est en train d'être réinitialisé")
+    for i in order:
+        channel = await get(bot, interactions.Channel, object_id=int(i))
+        await channel.modify(position=order[i])
+        time.sleep(1)
+    await ctx.channel.send("L'ordre a été réinitialisé")
 
 @bot.event
 async def on_ready():
